@@ -31,6 +31,6 @@ class CheckRequestOrigin
         // Bedingung zur Entscheidung, ob die Middleware angewendet werden soll
         // Beispiel: Anfrage-Header überprüfen
         // return $request->header('Origin') === 'http://10.3.16.167:9000';
-        return true;
+        return false;
     }
 }

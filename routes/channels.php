@@ -4,6 +4,9 @@ use App\Models\Chat;
 use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
+// When TokenBased Auth is implemented
+Broadcast::routes(['middleware' => ['auth:sanctum']]);
+
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
