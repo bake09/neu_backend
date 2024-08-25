@@ -3,14 +3,14 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Task;
+use App\Models\Message;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Message>
  */
-class TaskFactory extends Factory
+class MessageFactory extends Factory
 {
-    protected $model = Task::class;
+    protected $model = Message::class;
     /**
      * Define the model's default state.
      *
@@ -20,8 +20,8 @@ class TaskFactory extends Factory
     {
         return [
             'content' => $this->faker->name(),
+            'image_url' => null,
             'user_id' => 1,
-            'done' => false
         ];
     }
 }

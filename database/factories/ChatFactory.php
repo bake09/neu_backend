@@ -3,14 +3,14 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Task;
+use App\Models\Chat;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Chat>
  */
-class TaskFactory extends Factory
+class ChatFactory extends Factory
 {
-    protected $model = Task::class;
+    protected $model = Chat::class;
     /**
      * Define the model's default state.
      *
@@ -19,9 +19,8 @@ class TaskFactory extends Factory
     public function definition(): array
     {
         return [
-            'content' => $this->faker->name(),
-            'user_id' => 1,
-            'done' => false
+            'name' => $this->faker->name(),
+            'creator_id' => '1',
         ];
     }
 }
