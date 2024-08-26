@@ -23,6 +23,7 @@ class AuthTokenController extends Controller
         $success['token'] = $user->createToken('chatApp')->plainTextToken;
         $success['user'] = new UserResource($user);
 
+        // return
         return response()->json([
             'user' => $success['user'],
             'token' => $success['token']
