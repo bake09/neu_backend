@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\MessageResource;
 use App\Http\Resources\ChatsListResource;
 
+use Intervention\Image\Facades\Image;
+
 class ChatController extends Controller
 {
     public function index()
@@ -31,8 +33,9 @@ class ChatController extends Controller
         // Validierung der Eingabe
         $request->validate([
             'chat_id' => 'required|exists:chats,id',
-            'content' => 'required|max:255',
+            'content' => 'required_without:image|max:255',
             'image_url' => 'nullable|url', // Falls du ein Bild-URL-Feld hinzufügen möchtest
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
         ]);
 
         // Überprüfen, ob der Benutzer Mitglied des Chats ist
@@ -49,12 +52,21 @@ class ChatController extends Controller
             ], 403); // HTTP-Status 403 für "Forbidden"
         }
 
+        
+
+        $imagePath = null;
+
+        if ($request->hasFile('image')) {
+            // Speichert das Bild im Verzeichnis `public/uploads` und holt den Pfad
+            $imagePath = $request->file('image')->store('uploads', 'public');
+        }
+
         // Nachricht erstellen
         $message = Message::create([
             'chat_id' => $request->chat_id,
             'content' => $request->content,
             'user_id' => $user_id,
-            'image_url' => $request->image_url, // Falls vorhanden
+            'image_url' => $imagePath ? asset('storage/' . $imagePath) : null, // URL zum gespeicherten Bild
         ]);
         
         $message->load('user');
@@ -69,18 +81,8 @@ class ChatController extends Controller
 
     public function show(Chat $chat, Request $request)
     {
-        // return new ChatResource($chat->load(['messages.user']));
-
-
-        // // Paginieren Sie die Nachrichten in der Beziehung
-        // $messages = $chat->messages()->with('user')->paginate(3);
-
-        // // Fügen Sie die paginierten Nachrichten zur Chat-Ressource hinzu
-        // return (new ChatResource($chat))->additional(['messages' => $messages]);
-
-        // Paginieren Sie die Nachrichten in der Beziehung
-        // $messages = $chat->messages()->with('user')->paginate(3);
-        $messages = $chat->messages()->with('user')->get();
+        // $messages = $chat->messages()->with('user')->get();
+        $messages = $chat->messages()->with('user')->paginate(15);
 
         // Transformieren Sie die paginierten Nachrichten mit MessageResource
         $paginatedMessages = MessageResource::collection($messages);
@@ -104,21 +106,6 @@ class ChatController extends Controller
                     // 'total' => $messages->total(),
                 ]
             ]);
-            // ->additional(['messages' => $paginatedMessages])
-            // ->additional(['meta' => [
-            //     'current_page' => $messages->currentPage(),
-            //     'first_page_url' => $messages->url(1),
-            //     'from' => $messages->firstItem(),
-            //     'last_page' => $messages->lastPage(),
-            //     'last_page_url' => $messages->url($messages->lastPage()),
-            //     'links' => $messages->linkCollection()->toArray(),
-            //     'next_page_url' => $messages->nextPageUrl(),
-            //     'path' => $messages->path(),
-            //     'per_page' => $messages->perPage(),
-            //     'prev_page_url' => $messages->previousPageUrl(),
-            //     'to' => $messages->lastItem(),
-            //     'total' => $messages->total(),
-            // ]]);
     }
 
     public function update(Request $request, Chat $chat)

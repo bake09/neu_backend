@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->text('content');
+            $table->text('content')->nullable();
             $table->string('image_url')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignUuid('chat_id')->constrained()->onDelete('cascade');

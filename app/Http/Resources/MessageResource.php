@@ -21,6 +21,7 @@ class MessageResource extends JsonResource
             'chat_id' => $this->chat_id,
             'content' => $this->content,
             'created_at' => $this->created_at,
+            'image_url' => $this->image_url ?? null,
             'created_at_human' => Carbon::parse($this->created_at)->diffForHumans(),
             'created_at_time' => Carbon::parse($this->created_at)->format('H:i'),
             'read' => false,
