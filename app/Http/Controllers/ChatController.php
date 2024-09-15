@@ -59,6 +59,7 @@ class ChatController extends Controller
         if ($request->hasFile('image')) {
             // Speichert das Bild im Verzeichnis `public/uploads` und holt den Pfad
             $imagePath = $request->file('image')->store('uploads', 'public');
+            
         }
 
         // Nachricht erstellen
@@ -66,7 +67,8 @@ class ChatController extends Controller
             'chat_id' => $request->chat_id,
             'content' => $request->content,
             'user_id' => $user_id,
-            'image_url' => $imagePath ? asset('storage/' . $imagePath) : null, // URL zum gespeicherten Bild
+            // 'image_url' => $imagePath ? asset('storage/' . $imagePath) : null, // URL zum gespeicherten Bild
+            'image_url' => $imagePath ? 'storage/' . $imagePath : null, 
         ]);
         
         $message->load('user');
@@ -79,31 +81,78 @@ class ChatController extends Controller
         ], 201);
     }
 
+    // public function show(Chat $chat, Request $request)
+    // {
+    //     // $messages = $chat->messages()->with('user')->get();
+    //     $messages = $chat->messages()->with('user')->paginate(15);
+
+    //     // Transformieren Sie die paginierten Nachrichten mit MessageResource
+    //     $paginatedMessages = MessageResource::collection($messages);
+
+    //     // Fügen Sie die Chat-Daten und die paginierten Nachrichten zusammen und geben sie zurück
+    //     return (new ChatResource($chat))
+    //         ->additional([
+    //             'messages' => [
+    //                 'data' => $paginatedMessages,
+    //                 'meta_data' => [
+    //                     'current_page' => $messages->currentPage(),
+    //                     'first_page_url' => $messages->url(1),
+    //                     'from' => $messages->firstItem(),
+    //                     'last_page' => $messages->lastPage(),
+    //                     'last_page_url' => $messages->url($messages->lastPage()),
+    //                     'links' => $messages->linkCollection()->toArray(),
+    //                     'next_page_url' => $messages->nextPageUrl(),
+    //                     'path' => $messages->path(),
+    //                     'per_page' => $messages->perPage(),
+    //                     'prev_page_url' => $messages->previousPageUrl(),
+    //                     'to' => $messages->lastItem(),
+    //                     'total' => $messages->total(),
+    //                 ]
+    //             ]
+    //         ]);
+    // }
+
     public function show(Chat $chat, Request $request)
     {
-        // $messages = $chat->messages()->with('user')->get();
-        $messages = $chat->messages()->with('user')->paginate(15);
+        // $messages = $chat->messages()->with('user')->paginate(15);
+        $messages = $chat->messages()->with('user')->orderBy('created_at', 'desc')->paginate(15);
 
         // Transformieren Sie die paginierten Nachrichten mit MessageResource
         $paginatedMessages = MessageResource::collection($messages);
+
+        // Helper-Funktion, um die kurze URL-Form zu erhalten und "/api" zu entfernen
+        $shortenUrl = function ($url) {
+            if ($url) {
+                $parsedUrl = parse_url($url);
+                $path = $parsedUrl['path'] . (isset($parsedUrl['query']) ? '?' . $parsedUrl['query'] : '');
+                // Entferne das vorangestellte "/api"
+                return str_replace('/api', '', $path);
+            }
+            return null;
+        };
 
         // Fügen Sie die Chat-Daten und die paginierten Nachrichten zusammen und geben sie zurück
         return (new ChatResource($chat))
             ->additional([
                 'messages' => [
                     'data' => $paginatedMessages,
-                    // 'current_page' => $messages->currentPage(),
-                    // 'first_page_url' => $messages->url(1),
-                    // 'from' => $messages->firstItem(),
-                    // 'last_page' => $messages->lastPage(),
-                    // 'last_page_url' => $messages->url($messages->lastPage()),
-                    // 'links' => $messages->linkCollection()->toArray(),
-                    // 'next_page_url' => $messages->nextPageUrl(),
-                    // 'path' => $messages->path(),
-                    // 'per_page' => $messages->perPage(),
-                    // 'prev_page_url' => $messages->previousPageUrl(),
-                    // 'to' => $messages->lastItem(),
-                    // 'total' => $messages->total(),
+                    'meta_data' => [
+                        'current_page' => $messages->currentPage(),
+                        'first_page_url' => $shortenUrl($messages->url(1)),
+                        'from' => $messages->firstItem(),
+                        'last_page' => $messages->lastPage(),
+                        'last_page_url' => $shortenUrl($messages->url($messages->lastPage())),
+                        'links' => collect($messages->linkCollection()->toArray())->map(function ($link) use ($shortenUrl) {
+                            $link['url'] = $shortenUrl($link['url']);
+                            return $link;
+                        })->toArray(),
+                        'next_page_url' => $shortenUrl($messages->nextPageUrl()),
+                        'path' => str_replace('/api', '', $messages->path()),
+                        'per_page' => $messages->perPage(),
+                        'prev_page_url' => $shortenUrl($messages->previousPageUrl()),
+                        'to' => $messages->lastItem(),
+                        'total' => $messages->total(),
+                    ]
                 ]
             ]);
     }

@@ -3,11 +3,12 @@
 namespace Database\Seeders;
 
 use App\Models\Chat;
-use App\Models\Message;
 use App\Models\Task;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\User;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Message;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Storage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,6 +17,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $files = Storage::disk('public')->allFiles();
+        $directories = Storage::disk('public')->allDirectories();
+
+        // Lösche alle Dateien
+        Storage::disk('public')->delete($files);
+        
         // Erstelle Benutzer
         $user1 = User::factory()->create([
             'name' => 'A User',
