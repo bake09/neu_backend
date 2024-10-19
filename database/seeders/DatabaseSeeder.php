@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use App\Models\Chat;
 use App\Models\Task;
-use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use App\Models\Message;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
@@ -69,61 +70,82 @@ class DatabaseSeeder extends Seeder
         $chat3->users()->attach([$user2->id, $user3->id]);
 
         // Erstelle Nachrichten für die Chats
+        // Messages von Chat 1
         Message::factory()->create([
             'chat_id' => $chat1->id,
             'content' => 'Message 1',
             'image_url' => null,
             'user_id' => $user1->id,
+            'created_at' => Carbon::now()->addSeconds(0),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat1->id,
             'content' => 'Message 2',
             'image_url' => null,
             'user_id' => $user2->id,
+            'created_at' => Carbon::now()->addSeconds(1),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat1->id,
             'content' => 'Message 3',
             'image_url' => null,
             'user_id' => $user3->id,
+            'created_at' => Carbon::now()->addSeconds(2),
+            'updated_at' => NULL,
         ]);
 
+        // Messages von Chat 2
         Message::factory()->create([
             'chat_id' => $chat2->id,
             'content' => 'Message 1',
             'image_url' => null,
             'user_id' => $user1->id,
+            'created_at' => Carbon::now()->addSeconds(0),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat2->id,
             'content' => 'Message 2',
             'image_url' => null,
             'user_id' => $user2->id,
+            'created_at' => Carbon::now()->addSeconds(2),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat2->id,
             'content' => 'Message 3',
             'image_url' => null,
             'user_id' => $user2->id,
+            'created_at' => Carbon::now()->addSeconds(2),
+            'updated_at' => NULL,
         ]);
-
+        
+        // Messages von Chat 3
         Message::factory()->create([
             'chat_id' => $chat3->id,
             'content' => 'Message 1',
             'image_url' => null,
             'user_id' => $user3->id,
+            'created_at' => Carbon::now()->addSeconds(0),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat3->id,
             'content' => 'Message 2',
             'image_url' => null,
             'user_id' => $user3->id,
+            'created_at' => Carbon::now()->addSeconds(1),
+            'updated_at' => NULL,
         ]);
         Message::factory()->create([
             'chat_id' => $chat3->id,
             'content' => 'Message 3',
             'image_url' => null,
             'user_id' => $user2->id,
+            'created_at' => Carbon::now()->addSeconds(2),
+            'updated_at' => NULL,
         ]);
     }
 }

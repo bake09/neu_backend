@@ -8,15 +8,15 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\Auth\AuthTokenController;
 
-Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::apiResource('task', TaskController::class);
-    Route::apiResource('users', UserController::class);
+    Route::apiResource('user', UserController::class);
     Route::apiResource('chat', ChatController::class);
     Route::apiResource('message', MessageController::class);
+    Route::apiResource('task', TaskController::class);
     Route::patch('task/toggledone/{task}', [TaskController::class, 'toggledone']);
 });
 
